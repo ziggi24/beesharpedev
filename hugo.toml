@@ -8,7 +8,7 @@ theme = 'portfolio'
 # Style options: default (pink), blue, green, pink, red, sea, violet
 # Use custom.css for your custom styling
 sidebarAbout = [
-    "Hi! My name is Bee and Im a problem solver. \n \n Currently, I am an operations engineer at think-cell Software, a leading provider of software solutions for data visualization and presentation. With over five years of experience in technical consultation and project management, I have successfully delivered various projects for clients across different industries and domains, such as Meta, Google, and Amazon. ",
+    "Hi! I’m Bee — a full‑stack developer who loves building playful games and helpful tools. I care about performance, accessibility, and delightful UX.",
 ]
 style = "default"
 description = "Portfolio of Bee Sharpe"
