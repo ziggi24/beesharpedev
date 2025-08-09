@@ -4,16 +4,16 @@
     --card: #ffffff;
     --text: #1c1f24;
     --muted: #5b6573;
-    --accent: #ff7a90; /* cozy coral */
-    --accent-strong: #ff5470;
+    --accent: #ff6464; /* primary red */
+    --accent-strong: #ff6464;
 }
 :root.theme-dark {
     --bg: #0f1115;
     --card: #151821;
     --text: #e7eaf0;
     --muted: #a0a8b8;
-    --accent: #ff8ba7;
-    --accent-strong: #ff5c7a;
+    --accent: #ff6464;
+    --accent-strong: #ff6464;
 }
 
 html,
@@ -92,8 +92,8 @@ body {
     margin: 0 10px 10px 0;
 }
 #theme-toggle:hover {
-    border-color: var(--accent);
-    color: var(--accent-strong);
+    border-color: #ff6464;
+    color: #ff6464;
 }
 #theme-toggle .fa {
     vertical-align: bottom;
@@ -109,55 +109,154 @@ a:hover {
     text-decoration: none;
 }
 
-/* Cards / portfolio thumbs tweaks for more pop */
+/* Cards / portfolio thumbs - ticket style with 4:3 aspect ratio */
 .grid .masonry-item {
-    min-height: 420px;
+    aspect-ratio: 4/3;
+    max-width: 455px; /* 15% larger than original 500px */
+    margin: 0 auto 36px;
+    width: 100%;
 }
 .grid .box-masonry {
     background: var(--card);
     border: 1px solid rgba(127, 127, 127, 0.15);
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     transform-style: preserve-3d;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s ease;
     will-change: transform, box-shadow;
     height: 100%;
-    display: flex;
-    flex-direction: column;
+    position: relative;
+    display: block;
+}
+
+/* Ticket notch cut-out */
+.grid .box-masonry::before {
+    content: "";
+    position: absolute;
+    top: 20px;
+    right: -12px;
+    width: 24px;
+    height: 24px;
+    background: var(--bg);
+    border-radius: 50%;
+    z-index: 3;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Image fills entire card */
+.grid .box-masonry-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 .grid .box-masonry img {
     display: block;
     width: 100%;
-    height: 240px;
+    height: 100%;
     object-fit: cover;
     object-position: center;
 }
-.grid .box-masonry:hover {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
-}
-.grid .box-masonry-text,
-.grid .box-masonry-hover-text-header {
-    padding: 20px;
-    flex: 1;
+
+/* Hidden text content by default */
+.grid .box-masonry-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 32px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
 }
+
+/* Show text overlay on hover */
+.grid .box-masonry:hover .box-masonry-text {
+    opacity: 1;
+}
+
+/* Hover text header (for showonlyimage cards) */
+.grid .box-masonry-hover-text-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+/* Show hover text header on hover */
+.grid .box-masonry:hover .box-masonry-hover-text-header {
+    opacity: 1;
+}
+
+/* 3D hover effects */
+.grid .box-masonry:hover {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 248, 220, 0.3),
+        inset 0 -1px 0 rgba(255, 248, 220, 0.1),
+        inset 1px 0 0 rgba(255, 248, 220, 0.2);
+    transform: translateY(-4px);
+}
+
+/* Specular highlight on hover */
+.grid .box-masonry:hover::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 248, 220, 0.15) 0%,
+        rgba(255, 248, 220, 0.05) 30%,
+        transparent 60%
+    );
+    pointer-events: none;
+    border-radius: 16px;
+    z-index: 1;
+}
+
 .grid .box-masonry-text h4,
 .grid .box-masonry-hover-text-header h4 {
-    margin: 0 0 12px 0;
-    font-size: 18px;
-    font-weight: 600;
+    margin: 0 0 16px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1c1f24 !important;
+    line-height: 1.2;
 }
 .grid .box-masonry-description {
-    flex: 1;
+    max-width: 80%;
 }
 .grid .box-masonry-description p {
     margin: 0;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.5;
-    color: var(--text);
-    opacity: 0.8;
+    color: #1c1f24 !important;
+    font-weight: 500;
 }
 
 /* Interactive tilt helpers (JS applies transforms) */
@@ -219,10 +318,12 @@ p {
     color: var(--muted);
 }
 .hero-ctas .btn-primary {
-    background: var(--accent-strong);
-    border-color: var(--accent-strong);
+    background: #ff6464;
+    border-color: #ff6464;
+    color: white;
 }
 .hero-ctas .btn-primary:hover {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: #e55555;
+    border-color: #e55555;
+    color: white;
 }

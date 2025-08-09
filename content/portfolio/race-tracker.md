@@ -5,7 +5,7 @@ image = "/img/RaceTracker.jpeg"
 date = "2025-01-03T10:00:00+00:00" 
 title = "Race Tracker" 
 weight = 9 
-description = "GPS race tracking with live splits and shareable recaps. Built with SvelteKit, Mapbox, and Supabase."
+description = "Look up and keep track of your upcoming races, triathlons, and other sporting events. Built with React, Next.js, and PostgreSQL"
 +++
 
 Look up and keep track of your upcoming races, triathlons, and other sporting events. Built with React, Next.js, and PostgreSQL.
