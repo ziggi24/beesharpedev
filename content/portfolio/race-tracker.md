@@ -8,10 +8,11 @@ weight = 9
 description = "GPS race tracking with live splits and shareable recaps. Built with SvelteKit, Mapbox, and Supabase."
 +++
 
-Race Tracker is a live GPS race visualizer that records splits, elevation, and pace, then generates a shareable recap.
+Look up and keep track of your upcoming races, triathlons, and other sporting events. Built with React, Next.js, and PostgreSQL.
 
-- Stack: SvelteKit, TypeScript, Mapbox GL, Supabase, Edge Functions
-- Highlights: offline support, serverless ingest, animated route playback
+- Stack: React, Next.js, PostgreSQL, Prisma
+- Highlights: Event discovery, race calendar, performance tracking
+- Features: Real-time updates, social sharing, mobile-first design
 
 Links:
 

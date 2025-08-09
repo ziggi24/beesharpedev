@@ -156,7 +156,8 @@ a:hover {
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
-    color: var(--muted);
+    color: var(--text);
+    opacity: 0.8;
 }
 
 /* Interactive tilt helpers (JS applies transforms) */

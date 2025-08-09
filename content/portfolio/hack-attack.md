@@ -8,10 +8,11 @@ weight = 10
 description = "A fast‑paced browser game with real‑time powerups and leaderboard. Built with TypeScript, Canvas, and WebSockets."
 +++
 
-Hack Attack is a fast‑paced arcade browser game. I designed the mechanics, built the physics loop, and implemented a real‑time leaderboard service.
+A simon-says-style game with a hacker theme. Built from scratch with vanilla JavaScript.
 
-- Stack: TypeScript, Canvas 2D, WebSockets, Node.js
-- Highlights: deterministic game loop, accessibility first input model, mobile friendly haptics
+- Stack: Vanilla JavaScript, HTML5 Canvas, CSS3
+- Highlights: Progressive difficulty, score tracking, responsive design
+- Features: Sound effects, visual feedback, mobile-friendly controls
 
 Links:
 
