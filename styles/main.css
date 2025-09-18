@@ -388,8 +388,8 @@ html {
 }
 
 body {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        sans-serif;
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
     background-color: var(--bg-primary);
@@ -464,14 +464,17 @@ body {
     flex: 1;
     max-width: 600px;
     padding: 0 2rem;
+    padding-left: 5rem;
     z-index: 2;
     position: relative;
 }
 
 .hero-name {
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-family: "Tilt Neon", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    font-size: clamp(4rem, 8vw, 6rem);
     font-weight: 700;
-    line-height: 0.9;
+    line-height: 1.1;
     margin-bottom: 1rem;
     background: linear-gradient(
         135deg,
@@ -483,18 +486,28 @@ body {
     background-clip: text;
     opacity: 0;
     animation: slideInUp 1s ease 0.2s forwards;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.3),
+        0 0 20px rgba(139, 92, 246, 0.2), 0 0 30px rgba(59, 130, 246, 0.1);
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.2));
 }
 
 .hero-title {
+    font-family: "Tilt Neon", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     font-size: clamp(1.5rem, 4vw, 2.5rem);
     font-weight: 500;
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     opacity: 0;
     animation: slideInUp 1s ease 0.4s forwards;
+    text-shadow: 0 0 8px rgba(203, 213, 225, 0.4),
+        0 0 16px rgba(203, 213, 225, 0.2);
+    filter: drop-shadow(0 0 6px rgba(203, 213, 225, 0.3));
 }
 
 .hero-description {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     font-size: clamp(1.1rem, 2.5vw, 1.3rem);
     color: var(--text-secondary);
     margin-bottom: 2.5rem;
@@ -512,6 +525,8 @@ body {
 }
 
 .cta-button {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     padding: 1rem 2rem;
     border-radius: 0.5rem;
     text-decoration: none;
@@ -874,54 +889,228 @@ body {
 .floating-shapes {
     position: relative;
     width: 400px;
-    height: 400px;
+    height: 450px;
+}
+
+.floating-shapes::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+            ellipse at 30% 30%,
+            rgba(59, 130, 246, 0.08) 0%,
+            rgba(139, 92, 246, 0.06) 25%,
+            transparent 50%
+        ),
+        radial-gradient(
+            ellipse at 70% 60%,
+            rgba(6, 182, 212, 0.07) 0%,
+            rgba(34, 211, 238, 0.05) 30%,
+            transparent 60%
+        ),
+        radial-gradient(
+            ellipse at 50% 80%,
+            rgba(236, 72, 153, 0.06) 0%,
+            rgba(139, 92, 246, 0.04) 35%,
+            transparent 65%
+        );
+    border-radius: 50%;
+    filter: blur(25px);
+    animation: lightBend 15s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+    mix-blend-mode: screen;
 }
 
 .shape {
     position: absolute;
     border-radius: 50%;
-    opacity: 0.1;
-    animation: float 6s ease-in-out infinite;
+    opacity: 0.4;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    mix-blend-mode: screen;
+    transition: none;
+    will-change: transform, left, top;
+}
+
+.shape::before {
+    content: "";
+    position: absolute;
+    top: 12%;
+    left: 12%;
+    width: 25%;
+    height: 25%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0.15) 60%,
+        transparent 90%
+    );
+    border-radius: 50%;
+    animation: glassHighlight1 7.3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.shape::after {
+    content: "";
+    position: absolute;
+    bottom: 18%;
+    right: 18%;
+    width: 30%;
+    height: 30%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.08) 70%,
+        transparent 90%
+    );
+    border-radius: 50%;
+    animation: glassHighlight2 8.7s ease-in-out infinite reverse;
+    pointer-events: none;
 }
 
 .shape-1 {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
     background: linear-gradient(
         135deg,
-        var(--accent-primary),
-        var(--accent-secondary)
+        rgba(59, 130, 246, 0.25),
+        rgba(139, 92, 246, 0.3),
+        rgba(147, 51, 234, 0.2)
     );
-    top: 0;
-    left: 0;
+    top: 20px;
+    left: 40px;
     animation-delay: 0s;
+    filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.4))
+        drop-shadow(0 0 40px rgba(139, 92, 246, 0.3));
+    z-index: 3;
 }
 
 .shape-2 {
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
     background: linear-gradient(
         135deg,
-        var(--accent-tertiary),
-        var(--accent-primary)
+        rgba(6, 182, 212, 0.3),
+        rgba(34, 211, 238, 0.25),
+        rgba(59, 130, 246, 0.2)
     );
-    top: 100px;
-    right: 0;
-    animation-delay: 2s;
+    top: 120px;
+    right: 30px;
+    animation-delay: 4s;
+    filter: drop-shadow(0 0 20px rgba(6, 182, 212, 0.5))
+        drop-shadow(0 0 35px rgba(34, 211, 238, 0.4));
+    z-index: 2;
 }
 
 .shape-3 {
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 140px;
     background: linear-gradient(
         135deg,
-        var(--accent-secondary),
-        var(--accent-tertiary)
+        rgba(236, 72, 153, 0.25),
+        rgba(139, 92, 246, 0.3),
+        rgba(59, 130, 246, 0.2)
     );
-    bottom: 0;
-    left: 50%;
+    bottom: 40px;
+    left: 60%;
     transform: translateX(-50%);
-    animation-delay: 4s;
+    animation-delay: 8s;
+    filter: drop-shadow(0 0 18px rgba(236, 72, 153, 0.4))
+        drop-shadow(0 0 30px rgba(139, 92, 246, 0.3));
+    z-index: 1;
+}
+
+/* Light Mode Bubble Styling */
+[data-theme="light"] .shape {
+    opacity: 0.25;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .shape-1 {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.15),
+        rgba(139, 92, 246, 0.2),
+        rgba(147, 51, 234, 0.12)
+    );
+    filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3))
+        drop-shadow(0 0 35px rgba(139, 92, 246, 0.2));
+}
+
+[data-theme="light"] .shape-2 {
+    background: linear-gradient(
+        135deg,
+        rgba(6, 182, 212, 0.18),
+        rgba(34, 211, 238, 0.15),
+        rgba(59, 130, 246, 0.12)
+    );
+    filter: drop-shadow(0 0 18px rgba(6, 182, 212, 0.35))
+        drop-shadow(0 0 30px rgba(34, 211, 238, 0.25));
+}
+
+[data-theme="light"] .shape-3 {
+    background: linear-gradient(
+        135deg,
+        rgba(236, 72, 153, 0.16),
+        rgba(139, 92, 246, 0.18),
+        rgba(59, 130, 246, 0.14)
+    );
+    filter: drop-shadow(0 0 15px rgba(236, 72, 153, 0.3))
+        drop-shadow(0 0 25px rgba(139, 92, 246, 0.2));
+}
+
+[data-theme="light"] .floating-shapes::before {
+    background: radial-gradient(
+            ellipse at 30% 30%,
+            rgba(59, 130, 246, 0.06) 0%,
+            rgba(139, 92, 246, 0.04) 25%,
+            transparent 50%
+        ),
+        radial-gradient(
+            ellipse at 70% 60%,
+            rgba(6, 182, 212, 0.05) 0%,
+            rgba(34, 211, 238, 0.03) 30%,
+            transparent 60%
+        ),
+        radial-gradient(
+            ellipse at 50% 80%,
+            rgba(236, 72, 153, 0.04) 0%,
+            rgba(139, 92, 246, 0.03) 35%,
+            transparent 65%
+        );
+    filter: blur(20px);
+}
+
+/* Light Mode Neon Effects */
+[data-theme="light"] .hero-name {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.4),
+        0 0 20px rgba(139, 92, 246, 0.3), 0 0 30px rgba(59, 130, 246, 0.2);
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));
+}
+
+[data-theme="light"] .hero-title {
+    text-shadow: 0 0 8px rgba(100, 116, 139, 0.5),
+        0 0 16px rgba(100, 116, 139, 0.3);
+    filter: drop-shadow(0 0 6px rgba(100, 116, 139, 0.4));
+}
+
+[data-theme="light"] .section-title {
+    text-shadow: 0 0 15px rgba(59, 130, 246, 0.5),
+        0 0 30px rgba(139, 92, 246, 0.4), 0 0 45px rgba(59, 130, 246, 0.3);
+    filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.4));
 }
 
 /* Projects Section */
@@ -952,14 +1141,21 @@ body {
 }
 
 .section-title {
+    font-family: "Tilt Neon", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     font-size: clamp(2.5rem, 5vw, 3.5rem);
     font-weight: 700;
     text-align: center;
     margin-bottom: 1rem;
     color: var(--text-primary);
+    text-shadow: 0 0 15px rgba(59, 130, 246, 0.4),
+        0 0 30px rgba(139, 92, 246, 0.3), 0 0 45px rgba(59, 130, 246, 0.2);
+    filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.3));
 }
 
 .section-subtitle {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     font-size: 1.2rem;
     color: var(--text-secondary);
     text-align: center;
@@ -1065,6 +1261,8 @@ body {
 }
 
 .project-title {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     font-size: 1.3rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
@@ -1072,6 +1270,8 @@ body {
 }
 
 .project-description {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     line-height: 1.6;
@@ -1084,6 +1284,8 @@ body {
 }
 
 .project-link {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     text-decoration: none;
@@ -1149,6 +1351,8 @@ body {
 }
 
 .contact-info h3 {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -1156,6 +1360,8 @@ body {
 }
 
 .contact-info p {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     color: var(--text-secondary);
     margin-bottom: 2rem;
     line-height: 1.7;
@@ -1168,6 +1374,8 @@ body {
 }
 
 .contact-method {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -1212,6 +1420,8 @@ body {
 }
 
 .footer p {
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
     color: var(--text-muted);
 }
 
@@ -1239,12 +1449,140 @@ body {
 }
 
 @keyframes float {
-    0%,
+    0% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+    }
+    8% {
+        transform: translateY(-8px) translateX(5px) rotate(3deg);
+    }
+    16% {
+        transform: translateY(-12px) translateX(15px) rotate(1deg);
+    }
+    24% {
+        transform: translateY(-18px) translateX(8px) rotate(-2deg);
+    }
+    32% {
+        transform: translateY(-22px) translateX(-5px) rotate(4deg);
+    }
+    40% {
+        transform: translateY(-25px) translateX(-12px) rotate(2deg);
+    }
+    48% {
+        transform: translateY(-20px) translateX(-18px) rotate(-1deg);
+    }
+    56% {
+        transform: translateY(-15px) translateX(-8px) rotate(3deg);
+    }
+    64% {
+        transform: translateY(-10px) translateX(3px) rotate(-2deg);
+    }
+    72% {
+        transform: translateY(-5px) translateX(12px) rotate(1deg);
+    }
+    80% {
+        transform: translateY(-2px) translateX(6px) rotate(-3deg);
+    }
+    88% {
+        transform: translateY(-8px) translateX(-3px) rotate(2deg);
+    }
+    96% {
+        transform: translateY(-3px) translateX(-6px) rotate(-1deg);
+    }
     100% {
-        transform: translateY(0px);
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+    }
+}
+
+@keyframes glassHighlight1 {
+    0% {
+        opacity: 0.15;
+        transform: scale(1) rotate(0deg);
+    }
+    15% {
+        opacity: 0.25;
+        transform: scale(1.05) rotate(45deg);
+    }
+    30% {
+        opacity: 0.35;
+        transform: scale(1.1) rotate(90deg);
+    }
+    45% {
+        opacity: 0.2;
+        transform: scale(0.95) rotate(135deg);
+    }
+    60% {
+        opacity: 0.3;
+        transform: scale(1.08) rotate(180deg);
+    }
+    75% {
+        opacity: 0.18;
+        transform: scale(0.92) rotate(225deg);
+    }
+    90% {
+        opacity: 0.28;
+        transform: scale(1.02) rotate(270deg);
+    }
+    100% {
+        opacity: 0.15;
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+@keyframes glassHighlight2 {
+    0% {
+        opacity: 0.12;
+        transform: scale(1) rotate(0deg);
+    }
+    20% {
+        opacity: 0.22;
+        transform: scale(1.08) rotate(60deg);
+    }
+    35% {
+        opacity: 0.18;
+        transform: scale(0.88) rotate(120deg);
     }
     50% {
-        transform: translateY(-20px);
+        opacity: 0.25;
+        transform: scale(1.12) rotate(180deg);
+    }
+    65% {
+        opacity: 0.15;
+        transform: scale(0.95) rotate(240deg);
+    }
+    80% {
+        opacity: 0.28;
+        transform: scale(1.06) rotate(300deg);
+    }
+    100% {
+        opacity: 0.12;
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+@keyframes lightBend {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        opacity: 0.6;
+    }
+    20% {
+        transform: translate(-50%, -50%) scale(1.15) rotate(72deg);
+        opacity: 0.8;
+    }
+    40% {
+        transform: translate(-50%, -50%) scale(0.85) rotate(144deg);
+        opacity: 0.5;
+    }
+    60% {
+        transform: translate(-50%, -50%) scale(1.1) rotate(216deg);
+        opacity: 0.9;
+    }
+    80% {
+        transform: translate(-50%, -50%) scale(0.95) rotate(288deg);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1) rotate(360deg);
+        opacity: 0.6;
     }
 }
 
@@ -1270,8 +1608,36 @@ body {
     }
 
     .floating-shapes {
-        width: 200px;
-        height: 200px;
+        width: 250px;
+        height: 300px;
+    }
+
+    .floating-shapes::before {
+        width: 150%;
+        height: 150%;
+        filter: blur(15px);
+    }
+
+    .shape-1 {
+        width: 120px;
+        height: 120px;
+        top: 20px;
+        left: 20px;
+    }
+
+    .shape-2 {
+        width: 100px;
+        height: 100px;
+        top: 60px;
+        right: 30px;
+    }
+
+    .shape-3 {
+        width: 90px;
+        height: 90px;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
     .projects-grid {

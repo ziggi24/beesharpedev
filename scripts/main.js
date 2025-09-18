@@ -233,6 +233,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the application
     loadProjects();
     
+    // Initialize bubble physics
+    initializeBubblePhysics();
+    
     // Add page load animation
     setTimeout(() => {
         document.body.classList.add('loaded');
@@ -256,3 +259,276 @@ loadAnimationStyle.textContent = `
     }
 `;
 document.head.appendChild(loadAnimationStyle);
+
+// Bubble Physics System
+class BubblePhysics {
+    constructor() {
+        this.bubbles = [];
+        this.container = null;
+        this.containerRect = null;
+        this.animationId = null;
+        this.lastTime = 0;
+        this.deltaTime = 0;
+        
+        this.init();
+    }
+    
+    init() {
+        // Get container and bubbles
+        this.container = document.querySelector('.floating-shapes');
+        if (!this.container) {
+            console.warn('BubblePhysics: Container not found');
+            return;
+        }
+        
+        // Update container bounds first
+        this.updateContainerBounds();
+        
+        const shapes = document.querySelectorAll('.shape');
+        if (shapes.length === 0) {
+            console.warn('BubblePhysics: No shapes found');
+            return;
+        }
+        
+        console.log(`BubblePhysics: Initializing ${shapes.length} bubbles`);
+        
+        shapes.forEach((shape, index) => {
+            // Disable CSS animations
+            shape.style.animation = 'none';
+            
+            // Get initial position and size
+            const rect = shape.getBoundingClientRect();
+            
+            // Calculate relative position within container
+            const x = parseFloat(shape.style.left) || this.getComputedLeft(shape);
+            const y = parseFloat(shape.style.top) || this.getComputedTop(shape);
+            const size = rect.width;
+            
+            // Define speed multipliers for each bubble
+            const speedMultipliers = [1.0, 1.05, 1.08]; // shape 1: 100%, shape 2: 105%, shape 3: 108%
+            const speedMultiplier = speedMultipliers[index] || 1.0;
+            
+            // Create bubble object
+            const bubble = {
+                element: shape,
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 0.6 * speedMultiplier, // Random initial velocity with speed multiplier
+                vy: (Math.random() - 0.5) * 0.6 * speedMultiplier,
+                size: size,
+                mass: size * 0.01, // Mass proportional to size
+                bounce: 0.8, // Bounce factor
+                friction: 0.998, // Air resistance
+                maxSpeed: 1.8 * speedMultiplier, // Maximum speed with speed multiplier
+                speedMultiplier: speedMultiplier, // Store multiplier for other calculations
+                index: index
+            };
+            
+            this.bubbles.push(bubble);
+        });
+        
+        this.startAnimation();
+        
+        // Update container bounds on resize
+        window.addEventListener('resize', () => {
+            this.updateContainerBounds();
+        });
+    }
+    
+    getComputedLeft(element) {
+        const computed = window.getComputedStyle(element);
+        const left = computed.left;
+        const right = computed.right;
+        
+        if (left !== 'auto') {
+            return parseFloat(left);
+        } else if (right !== 'auto') {
+            // Convert right positioning to left positioning
+            return this.containerRect.width - parseFloat(right) - element.offsetWidth;
+        }
+        return 0;
+    }
+    
+    getComputedTop(element) {
+        const computed = window.getComputedStyle(element);
+        const top = computed.top;
+        const bottom = computed.bottom;
+        
+        if (top !== 'auto') {
+            return parseFloat(top);
+        } else if (bottom !== 'auto') {
+            // Convert bottom positioning to top positioning
+            return this.containerRect.height - parseFloat(bottom) - element.offsetHeight;
+        }
+        return 0;
+    }
+    
+    updateContainerBounds() {
+        if (!this.container) return;
+        
+        const rect = this.container.getBoundingClientRect();
+        this.containerRect = {
+            width: rect.width,
+            height: rect.height,
+            left: 0,
+            top: 0,
+            right: rect.width,
+            bottom: rect.height
+        };
+    }
+    
+    updateBubble(bubble, deltaTime) {
+        // Apply friction
+        bubble.vx *= bubble.friction;
+        bubble.vy *= bubble.friction;
+        
+        // Limit maximum speed
+        const speed = Math.sqrt(bubble.vx * bubble.vx + bubble.vy * bubble.vy);
+        if (speed > bubble.maxSpeed) {
+            bubble.vx = (bubble.vx / speed) * bubble.maxSpeed;
+            bubble.vy = (bubble.vy / speed) * bubble.maxSpeed;
+        }
+        
+        // Add small random movement
+        if (Math.random() < 0.02) { // 2% chance per frame
+            bubble.vx += (Math.random() - 0.5) * 0.12 * bubble.speedMultiplier; // Random movement with speed multiplier
+            bubble.vy += (Math.random() - 0.5) * 0.12 * bubble.speedMultiplier;
+        }
+        
+        // Update position
+        bubble.x += bubble.vx * deltaTime * 60; // Scale for 60fps
+        bubble.y += bubble.vy * deltaTime * 60;
+        
+        // Handle container boundaries
+        const radius = bubble.size / 2;
+        
+        // Left and right boundaries
+        if (bubble.x - radius < this.containerRect.left) {
+            bubble.x = this.containerRect.left + radius;
+            bubble.vx = Math.abs(bubble.vx) * bubble.bounce;
+        } else if (bubble.x + radius > this.containerRect.right) {
+            bubble.x = this.containerRect.right - radius;
+            bubble.vx = -Math.abs(bubble.vx) * bubble.bounce;
+        }
+        
+        // Top and bottom boundaries
+        if (bubble.y - radius < this.containerRect.top) {
+            bubble.y = this.containerRect.top + radius;
+            bubble.vy = Math.abs(bubble.vy) * bubble.bounce;
+        } else if (bubble.y + radius > this.containerRect.bottom) {
+            bubble.y = this.containerRect.bottom - radius;
+            bubble.vy = -Math.abs(bubble.vy) * bubble.bounce;
+        }
+        
+        // Apply position to element
+        bubble.element.style.left = `${bubble.x}px`;
+        bubble.element.style.top = `${bubble.y}px`;
+        bubble.element.style.position = 'absolute';
+    }
+    
+    checkCollisions() {
+        for (let i = 0; i < this.bubbles.length; i++) {
+            for (let j = i + 1; j < this.bubbles.length; j++) {
+                const bubble1 = this.bubbles[i];
+                const bubble2 = this.bubbles[j];
+                
+                const dx = bubble2.x - bubble1.x;
+                const dy = bubble2.y - bubble1.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const minDistance = (bubble1.size + bubble2.size) / 2;
+                
+                if (distance < minDistance) {
+                    // Collision detected
+                    const angle = Math.atan2(dy, dx);
+                    const sin = Math.sin(angle);
+                    const cos = Math.cos(angle);
+                    
+                    // Rotate bubble1's position
+                    const x1 = 0;
+                    const y1 = 0;
+                    
+                    // Rotate bubble2's position
+                    const x2 = dx * cos + dy * sin;
+                    const y2 = dy * cos - dx * sin;
+                    
+                    // Rotate bubble1's velocity
+                    const vx1 = bubble1.vx * cos + bubble1.vy * sin;
+                    const vy1 = bubble1.vy * cos - bubble1.vx * sin;
+                    
+                    // Rotate bubble2's velocity
+                    const vx2 = bubble2.vx * cos + bubble2.vy * sin;
+                    const vy2 = bubble2.vy * cos - bubble2.vx * sin;
+                    
+                    // Collision reaction
+                    const vxTotal = vx1 - vx2;
+                    const vx1New = ((bubble1.mass - bubble2.mass) * vx1 + 2 * bubble2.mass * vx2) / (bubble1.mass + bubble2.mass);
+                    const vx2New = vxTotal + vx1New;
+                    
+                    // Update velocities
+                    bubble1.vx = vx1New * cos - vy1 * sin;
+                    bubble1.vy = vy1 * cos + vx1New * sin;
+                    bubble2.vx = vx2New * cos - vy2 * sin;
+                    bubble2.vy = vy2 * cos + vx2New * sin;
+                    
+                    // Separate bubbles
+                    const overlap = minDistance - distance;
+                    const separationX = (overlap / 2) * cos;
+                    const separationY = (overlap / 2) * sin;
+                    
+                    bubble1.x -= separationX;
+                    bubble1.y -= separationY;
+                    bubble2.x += separationX;
+                    bubble2.y += separationY;
+                }
+            }
+        }
+    }
+    
+    animate(currentTime) {
+        if (!this.lastTime) this.lastTime = currentTime;
+        this.deltaTime = (currentTime - this.lastTime) / 1000;
+        this.lastTime = currentTime;
+        
+        // Update each bubble
+        this.bubbles.forEach(bubble => {
+            this.updateBubble(bubble, this.deltaTime);
+        });
+        
+        // Check for collisions
+        this.checkCollisions();
+        
+        // Continue animation
+        this.animationId = requestAnimationFrame((time) => this.animate(time));
+    }
+    
+    startAnimation() {
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+        this.lastTime = 0;
+        this.animationId = requestAnimationFrame((time) => this.animate(time));
+    }
+    
+    stopAnimation() {
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+    }
+}
+
+// Initialize bubble physics when DOM is ready
+function initializeBubblePhysics() {
+    // Wait a bit for CSS to load and elements to be positioned
+    setTimeout(() => {
+        try {
+            new BubblePhysics();
+        } catch (error) {
+            console.error('Error initializing bubble physics:', error);
+            // Fallback: re-enable CSS animations if JS fails
+            document.querySelectorAll('.shape').forEach(shape => {
+                shape.style.animation = 'float 12s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite';
+            });
+        }
+    }, 200); // Increased delay for mobile
+}
