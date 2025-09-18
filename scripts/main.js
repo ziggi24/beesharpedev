@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.querySelector('.theme-toggle');
     const body = document.body;
     
-    // Check for saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    // Check for saved theme preference or default to dark mode
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     body.setAttribute('data-theme', savedTheme);
     
     // Theme toggle functionality
@@ -52,7 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.animationDelay = `${index * 0.1}s`;
         
         card.innerHTML = `
-            <img src="${project.img}" alt="${project.Name}" class="project-image" loading="lazy">
+            <div class="project-image-container">
+                <img src="${project.img}" alt="${project.Name}" class="project-image" loading="lazy">
+            </div>
             <div class="project-content">
                 <h3 class="project-title">${project.Name}</h3>
                 <p class="project-description">${project.description}</p>

@@ -47,6 +47,16 @@
         0 8px 10px -6px rgb(0 0 0 / 0.3);
 }
 
+[data-theme="dark"] .project-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .project-card:hover {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.4),
+        0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -330,17 +340,23 @@ body {
     background: var(--bg-primary);
     border-radius: 1rem;
     overflow: hidden;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08),
+        0 2px 8px rgba(0, 0, 0, 0.04);
     transition: all 0.3s ease;
     border: 1px solid var(--border-color);
     opacity: 0;
     transform: translateY(30px);
     animation: fadeInUp 0.6s ease forwards;
+    height: auto;
+    min-height: 580px;
+    display: flex;
+    flex-direction: column;
 }
 
 .project-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-xl);
+    transform: translateY(-12px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 12px 32px rgba(0, 0, 0, 0.1),
+        0 6px 16px rgba(0, 0, 0, 0.06);
 }
 
 .project-card:nth-child(1) {
@@ -362,9 +378,33 @@ body {
     animation-delay: 0.6s;
 }
 
+.project-image-container {
+    width: 100%;
+    aspect-ratio: 16/15;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* Fallback for browsers that don't support aspect-ratio */
+@supports not (aspect-ratio: 16/15) {
+    .project-image-container {
+        height: 0;
+        padding-bottom: 93.75%; /* 16:15 aspect ratio (15/16 = 0.9375) */
+    }
+
+    .project-image-container .project-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+
 .project-image {
     width: 100%;
-    height: 350px;
+    height: 100%;
     object-fit: cover;
     object-position: center;
     transition: transform 0.3s ease;
@@ -377,6 +417,11 @@ body {
 
 .project-content {
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    min-height: 250px;
 }
 
 .project-title {
@@ -390,6 +435,7 @@ body {
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     line-height: 1.6;
+    flex-grow: 1;
 }
 
 .project-links {
@@ -567,13 +613,14 @@ body {
     .hero {
         flex-direction: column;
         text-align: center;
-        padding: 2rem 0;
+        padding: 5rem 0 2rem 0;
         min-height: 80vh;
     }
 
     .hero-content {
         padding: 0 1rem;
         margin-bottom: 1rem;
+        padding-top: 3rem;
     }
 
     .hero-visual {
