@@ -305,7 +305,7 @@ class BubblePhysics {
             const size = rect.width;
             
             // Define speed multipliers for each bubble
-            const speedMultipliers = [1.0, 1.05, 1.08]; // shape 1: 100%, shape 2: 105%, shape 3: 108%
+            const speedMultipliers = [1.0, 1.07, 1.1]; // shape 1: 100%, shape 2: 105%, shape 3: 108%
             const speedMultiplier = speedMultipliers[index] || 1.0;
             
             // Create bubble object
