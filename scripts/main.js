@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <polyline points="15,3 21,3 21,9"/>
                             <line x1="10" y1="14" x2="21" y2="3"/>
                         </svg>
-                        Live Demo
+                        Live Page
                     </a>
                     <a href="${project.github}" target="_blank" rel="noopener noreferrer" class="project-link secondary">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

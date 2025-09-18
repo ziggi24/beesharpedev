@@ -1,21 +1,5 @@
 [
     {
-      "Name": "Kiana Nadonza",
-      "description": "A portfolio website created to help a friend showcase their skills.",
-      "link": "https://kiananadonza.com/",
-      "github": "https://github.com/ziggi24/KianaNadonza",
-      "tags": [],
-      "img": "/assets/img/Kiana Nadonza.jpeg"
-    },
-    {
-      "Name": "Onyx Hiked the Colorado Trail",
-      "description": "A web-based journal and photo gallery documenting a thru-hike adventure along the scenic Colorado Trail.",
-      "link": "https://ziggi24.github.io/onyxhikes/",
-      "github": "https://github.com/ziggi24/onyxhikes",
-      "tags": [],
-      "img": "/assets/img/Onyx Hiked the Colorado Trail_.jpeg"
-    },
-    {
       "Name": "Formulaic Emoji Codebreaker",
       "description": "A wordle-like daily interactive web game that challenges players to test their logic by deciphering emoji-based codes.",
       "link": "https://formulaic.dev/",
@@ -38,6 +22,22 @@
       "github": "https://github.com/ziggi24/RaceTracker",
       "tags": [],
       "img": "/assets/img/RaceTracker · 10.48 · 09-18.jpeg"
+    },
+    {
+      "Name": "Onyx Hiked the Colorado Trail",
+      "description": "A web-based journal and photo gallery documenting a thru-hike adventure along the scenic Colorado Trail.",
+      "link": "https://ziggi24.github.io/onyxhikes/",
+      "github": "https://github.com/ziggi24/onyxhikes",
+      "tags": [],
+      "img": "/assets/img/Onyx Hiked the Colorado Trail_.jpeg"
+    },
+    {
+      "Name": "Kiana Nadonza",
+      "description": "A portfolio website created to help a friend showcase their skills.",
+      "link": "https://kiananadonza.com/",
+      "github": "https://github.com/ziggi24/KianaNadonza",
+      "tags": [],
+      "img": "/assets/img/Kiana Nadonza.jpeg"
     },
     {
       "Name": "Hack Attack",
