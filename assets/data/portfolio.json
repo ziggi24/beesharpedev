@@ -1,0 +1,50 @@
+[
+    {
+      "Name": "Kiana Nadonza",
+      "description": "A portfolio website created to help a friend showcase their skills.",
+      "link": "https://kiananadonza.com/",
+      "github": "https://github.com/ziggi24/KianaNadonza",
+      "tags": [],
+      "img": "/assets/img/Kiana Nadonza.jpeg"
+    },
+    {
+      "Name": "Onyx Hiked the Colorado Trail",
+      "description": "A web-based journal and photo gallery documenting a thru-hike adventure along the scenic Colorado Trail.",
+      "link": "https://ziggi24.github.io/onyxhikes/",
+      "github": "https://github.com/ziggi24/onyxhikes",
+      "tags": [],
+      "img": "/assets/img/Onyx Hiked the Colorado Trail_.jpeg"
+    },
+    {
+      "Name": "Formulaic Emoji Codebreaker",
+      "description": "A wordle-like daily interactive web game that challenges players to test their logic by deciphering emoji-based codes.",
+      "link": "https://formulaic.dev/",
+      "github": "https://github.com/ziggi24/formulaic",
+      "tags": [],
+      "img": "/assets/img/Formulaic _ Emoji Codebreaker · 10.50 · 09-18.jpeg"
+    },
+    {
+      "Name": "PokeTools - Team Builder",
+      "description": "A strategic tool designed to help Pokémon players build, analyze, and optimize their teams.",
+      "link": "https://ziggi24.github.io/PokeTools/",
+      "github": "https://github.com/ziggi24/PokeTools",
+      "tags": [],
+      "img": "/assets/img/PokeTools - Team Builder.jpeg"
+    },
+    {
+      "Name": "RaceTracker",
+      "description": "A dynamic application for tracking and displaying upcoming race data and results for competitive events.",
+      "link": "https://racetracker-frontend-142898422777.us-central1.run.app/",
+      "github": "https://github.com/ziggi24/RaceTracker",
+      "tags": [],
+      "img": "/assets/img/RaceTracker · 10.48 · 09-18.jpeg"
+    },
+    {
+      "Name": "Hack Attack",
+      "description": "An engaging, retro-style browser game that simulates a fun cybersecurity-themed challenge.",
+      "link": "https://ziggi24.github.io/Hack-Attack/",
+      "github": "https://github.com/ziggi24/Hack-Attack",
+      "tags": [],
+      "img": "/assets/img/Hack Attack.jpeg"
+    }
+  ]
