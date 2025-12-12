@@ -339,11 +339,19 @@ body {
    ============================================ */
 .hero {
     min-height: 100vh;
+    /* iOS Safari + modern mobile browsers: stable viewport sizing */
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
     padding: var(--space-32) var(--space-6) var(--space-16);
+}
+
+@supports (height: 100dvh) {
+    .hero {
+        min-height: 100dvh;
+    }
 }
 
 .hero-container {
@@ -521,30 +529,115 @@ body {
     position: relative;
     width: 400px;
     height: 450px;
+    /* GPU layer isolation for smoother compositing */
+    transform: translateZ(0);
+    will-change: contents;
+    /* Allow bubbles to extend beyond container bounds */
+    overflow: visible;
+    /* Containment without paint to prevent clipping */
+    contain: layout style;
 }
 
 .glass-sphere {
     position: absolute;
     border-radius: 50%;
     background: var(--glass-bg);
-    backdrop-filter: blur(20px) saturate(150%);
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    /* Baseline glass look that renders consistently across Firefox + WebKit */
+    background-color: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--glass-border);
     box-shadow: 
         var(--shadow-xl),
         inset 0 1px 1px rgba(255, 255, 255, 0.1),
         inset 0 -1px 1px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    /* Allow pseudo-elements to render fully, but clip them to the sphere shape */
+    overflow: visible;
     transition: none;
-    will-change: transform, left, top;
+    /* GPU acceleration and smooth rendering optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+    /* Containment without paint to prevent clipping of the sphere itself */
+    contain: layout style;
+    /* Anti-aliasing for smooth edges */
+    -webkit-font-smoothing: antialiased;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
 }
 
+.glass-sphere::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    /* Clip to sphere shape */
+    overflow: hidden;
+    /* subtle highlight + depth without blend-modes (better cross-browser) */
+    background:
+        radial-gradient(120% 120% at 25% 20%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 28%, transparent 55%),
+        radial-gradient(90% 90% at 75% 80%, rgba(0, 0, 0, 0.18) 0%, transparent 55%);
+    opacity: 0.9;
+}
+
+.glass-sphere::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    /* Clip to sphere shape */
+    overflow: hidden;
+    /* edge sheen to keep a consistent "glass rim" */
+    background: radial-gradient(circle at 50% 50%, transparent 58%, rgba(255, 255, 255, 0.10) 72%, rgba(255, 255, 255, 0.02) 100%);
+    opacity: 0.7;
+}
+
+/* Progressive enhancement: enable backdrop blur only where supported */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-sphere {
+        backdrop-filter: blur(18px) saturate(155%);
+        -webkit-backdrop-filter: blur(18px) saturate(155%);
+        /* reduce base fill a touch so the blur reads cleanly */
+        background-color: rgba(255, 255, 255, 0.03);
+        /* reduce Safari/iOS edge clipping artifacts */
+        -webkit-mask-image: -webkit-radial-gradient(white, black);
+        /* Isolate backdrop-filter to its own layer for better performance */
+        isolation: isolate;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile perf: slightly lighter blur/shadow while preserving the look */
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+        .glass-sphere {
+            backdrop-filter: blur(14px) saturate(145%);
+            -webkit-backdrop-filter: blur(14px) saturate(145%);
+        }
+    }
+
+    .glass-sphere {
+        box-shadow:
+            0 12px 32px rgba(0, 0, 0, 0.45),
+            inset 0 1px 1px rgba(255, 255, 255, 0.1),
+            inset 0 -1px 1px rgba(0, 0, 0, 0.12);
+        /* Reduce will-change on mobile to save resources */
+        will-change: auto;
+    }
+    
+    /* Re-enable will-change only when actively animating */
+    .glass-sphere-container.animating .glass-sphere {
+        will-change: transform;
+    }
+}
 
 .sphere-1 {
     width: 180px;
     height: 180px;
     top: 20px;
-    left: 40px;
+    left: 50px;
     background: linear-gradient(135deg, 
         rgba(59, 130, 246, 0.15) 0%, 
         rgba(139, 92, 246, 0.2) 50%,
@@ -555,8 +648,8 @@ body {
 .sphere-2 {
     width: 160px;
     height: 160px;
-    top: 120px;
-    right: 30px;
+    top: 100px;
+    right: 50px;
     background: linear-gradient(135deg, 
         rgba(6, 182, 212, 0.18) 0%, 
         rgba(34, 211, 238, 0.15) 50%,
@@ -567,7 +660,7 @@ body {
 .sphere-3 {
     width: 140px;
     height: 140px;
-    bottom: 40px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, 
@@ -978,9 +1071,9 @@ body {
         height: 360px;
     }
     
-    .sphere-1 { width: 140px; height: 140px; top: 10px; left: 30px; }
-    .sphere-2 { width: 120px; height: 120px; top: 80px; right: 20px; }
-    .sphere-3 { width: 100px; height: 100px; bottom: 30px; }
+    .sphere-1 { width: 140px; height: 140px; top: 10px; left: 40px; }
+    .sphere-2 { width: 120px; height: 120px; top: 70px; right: 30px; }
+    .sphere-3 { width: 100px; height: 100px; bottom: 20px; }
     
     .contact-layout {
         grid-template-columns: 1fr;

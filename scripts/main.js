@@ -9,7 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     NavigationManager.init();
     ProjectsManager.init();
     AnimationManager.init();
-    SpherePhysics.init();
+    
+    // Defer sphere init to ensure styles/layout are fully applied (more stable across iOS/WebKit)
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (!prefersReducedMotion) {
+        requestAnimationFrame(() => SpherePhysics.init());
+    }
     
     // Set footer year
     const yearEl = document.querySelector('.footer-year');
@@ -203,15 +208,20 @@ const SpherePhysics = {
     bounds: null,
     animationId: null,
     lastTime: 0,
+    resizeObserver: null,
     minImpulseInterval: 1100,   // ms
     maxImpulseInterval: 2000,  // ms
-    edgePadding: 12,
+    edgePadding: 0,  // Allow bubbles to extend to edges (overflow: visible handles clipping)
     
     init() {
         this.container = document.querySelector('.glass-sphere-container');
         if (!this.container) return;
         
-        this.updateBounds();
+        // Respect reduced motion at runtime too
+        const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+        if (reducedMotion?.matches) return;
+        
+        this.updateBounds(false);
         
         const sphereEls = document.querySelectorAll('.glass-sphere');
         if (sphereEls.length === 0) return;
@@ -255,19 +265,70 @@ const SpherePhysics = {
             el.style.left = '0px';
             el.style.top = '0px';
             el.style.willChange = 'transform';
+            // Ensure GPU acceleration is active
+            el.style.transform = 'translateZ(0)';
         });
         
         this.start();
-        window.addEventListener('resize', () => this.updateBounds());
+        
+        // Keep bounds stable on mobile (orientation changes + dynamic viewport)
+        window.addEventListener('resize', () => this.updateBounds(true), { passive: true });
+        window.addEventListener('orientationchange', () => this.updateBounds(true), { passive: true });
+        
+        if ('ResizeObserver' in window) {
+            this.resizeObserver = new ResizeObserver(() => this.updateBounds(true));
+            this.resizeObserver.observe(this.container);
+        }
+        
+        // Save battery and avoid iOS Safari rendering glitches while tabbed away
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) this.stop();
+            else this.start();
+        });
+        
+        // If user toggles reduced motion while open, stop animation
+        reducedMotion?.addEventListener?.('change', (e) => {
+            if (e.matches) this.stop();
+            else this.start();
+        });
     },
     
-    updateBounds() {
+    updateBounds(clampSpheres) {
         if (!this.container) return;
         const rect = this.container.getBoundingClientRect();
         this.bounds = { width: rect.width, height: rect.height };
+        
+        // On responsive breakpoints/orientation, sphere sizes can change; refresh metrics
+        this.refreshSphereMetrics();
+        
+        if (clampSpheres) {
+            this.clampAllToBounds();
+        }
+    },
+    
+    refreshSphereMetrics() {
+        if (!this.spheres.length) return;
+        this.spheres.forEach(s => {
+            const rect = s.element.getBoundingClientRect();
+            const size = rect.width || s.size;
+            s.size = size;
+            s.mass = size * 0.01;
+        });
+    },
+    
+    clampAllToBounds() {
+        if (!this.bounds || !this.spheres.length) return;
+        this.spheres.forEach(s => {
+            const r = (s.size || 0) / 2;
+            const maxX = Math.max(r, this.bounds.width - r);
+            const maxY = Math.max(r, this.bounds.height - r);
+            s.x = Math.min(Math.max(s.x, r), maxX);
+            s.y = Math.min(Math.max(s.y, r), maxY);
+        });
     },
     
     update(sphere, dt, now) {
+        if (!this.bounds) return;
         // Current direction of travel (fallback to random if nearly idle)
         const currentSpeed = Math.hypot(sphere.vx, sphere.vy);
         const dirAngle = currentSpeed > 0.0001 ? Math.atan2(sphere.vy, sphere.vx) : Math.random() * Math.PI * 2;
@@ -312,34 +373,44 @@ const SpherePhysics = {
         sphere.x += sphere.vx * dt * 60;
         sphere.y += sphere.vy * dt * 60;
         
-        // Boundary collisions
+        // Boundary collisions - allow bubbles to extend slightly beyond bounds for full visibility
         const r = sphere.size / 2;
+        // Allow bubbles to extend up to 50% of radius beyond container for full visibility
+        const extendBounds = r * 0.5;
+        const minX = -extendBounds;
+        const maxX = this.bounds.width + extendBounds;
+        const minY = -extendBounds;
+        const maxY = this.bounds.height + extendBounds;
         
-        // Soft steering near edges to reduce sudden flips
-        const pad = this.edgePadding + r * 0.25;
-        if (sphere.x - r < pad) sphere.vx += (pad - (sphere.x - r)) * 0.0009 * (dt * 60);
-        if (sphere.x + r > this.bounds.width - pad) sphere.vx -= (sphere.x + r - (this.bounds.width - pad)) * 0.0009 * (dt * 60);
-        if (sphere.y - r < pad) sphere.vy += (pad - (sphere.y - r)) * 0.0009 * (dt * 60);
-        if (sphere.y + r > this.bounds.height - pad) sphere.vy -= (sphere.y + r - (this.bounds.height - pad)) * 0.0009 * (dt * 60);
+        // Soft steering near extended edges to reduce sudden flips
+        const pad = r * 0.3;
+        if (sphere.x - r < minX + pad) sphere.vx += ((minX + pad) - (sphere.x - r)) * 0.0009 * (dt * 60);
+        if (sphere.x + r > maxX - pad) sphere.vx -= (sphere.x + r - (maxX - pad)) * 0.0009 * (dt * 60);
+        if (sphere.y - r < minY + pad) sphere.vy += ((minY + pad) - (sphere.y - r)) * 0.0009 * (dt * 60);
+        if (sphere.y + r > maxY - pad) sphere.vy -= (sphere.y + r - (maxY - pad)) * 0.0009 * (dt * 60);
         
-        if (sphere.x - r < 0) {
-            sphere.x = r;
+        // Hard boundary collision at extended bounds
+        if (sphere.x - r < minX) {
+            sphere.x = minX + r;
             sphere.vx = Math.abs(sphere.vx) * sphere.bounce;
-        } else if (sphere.x + r > this.bounds.width) {
-            sphere.x = this.bounds.width - r;
+        } else if (sphere.x + r > maxX) {
+            sphere.x = maxX - r;
             sphere.vx = -Math.abs(sphere.vx) * sphere.bounce;
         }
         
-        if (sphere.y - r < 0) {
-            sphere.y = r;
+        if (sphere.y - r < minY) {
+            sphere.y = minY + r;
             sphere.vy = Math.abs(sphere.vy) * sphere.bounce;
-        } else if (sphere.y + r > this.bounds.height) {
-            sphere.y = this.bounds.height - r;
+        } else if (sphere.y + r > maxY) {
+            sphere.y = maxY - r;
             sphere.vy = -Math.abs(sphere.vy) * sphere.bounce;
         }
         
-        // Apply transform
-        sphere.element.style.transform = `translate3d(${sphere.x}px, ${sphere.y}px, 0)`;
+        // Apply transform with pixel-perfect rounding to prevent subpixel jitter
+        // Round to nearest 0.5px for smoother rendering (half-pixel precision)
+        const roundedX = Math.round(sphere.x * 2) / 2;
+        const roundedY = Math.round(sphere.y * 2) / 2;
+        sphere.element.style.transform = `translate3d(${roundedX}px, ${roundedY}px, 0)`;
     },
     
     checkCollisions() {
@@ -351,7 +422,9 @@ const SpherePhysics = {
                 const dx = b.x - a.x;
                 const dy = b.y - a.y;
                 const dist = Math.hypot(dx, dy);
-                const minDist = (a.size + b.size) / 2;
+                // Allow 30% more overlap: reduce minDist by 30% (multiply by 0.7)
+                // This means bubbles can overlap up to 30% more than before
+                const minDist = (a.size + b.size) / 2 * 0.7;
                 
                 if (dist < minDist && dist > 0) {
                     // Collision response
@@ -365,7 +438,7 @@ const SpherePhysics = {
                     const vx2 = b.vx * cos + b.vy * sin;
                     const vy2 = b.vy * cos - b.vx * sin;
                     
-                    // Elastic collision
+                    // Elastic collision with stronger bounce to help separation
                     const totalMass = a.mass + b.mass;
                     const newVx1 = ((a.mass - b.mass) * vx1 + 2 * b.mass * vx2) / totalMass;
                     const newVx2 = ((b.mass - a.mass) * vx2 + 2 * a.mass * vx1) / totalMass;
@@ -376,10 +449,20 @@ const SpherePhysics = {
                     b.vx = newVx2 * cos - vy2 * sin;
                     b.vy = vy2 * cos + newVx2 * sin;
                     
-                    // Separate spheres
-                    const overlap = (minDist - dist) / 2;
-                    const sepX = overlap * cos;
-                    const sepY = overlap * sin;
+                    // Add repulsion force to velocities to help bubbles separate
+                    const overlap = (minDist - dist);
+                    const repulsionStrength = 0.15; // Stronger repulsion
+                    const repulseX = cos * overlap * repulsionStrength;
+                    const repulseY = sin * overlap * repulsionStrength;
+                    
+                    a.vx -= repulseX;
+                    a.vy -= repulseY;
+                    b.vx += repulseX;
+                    b.vy += repulseY;
+                    
+                    // Always separate positionally to prevent sticking
+                    const sepX = overlap * cos * 0.8; // Stronger separation
+                    const sepY = overlap * sin * 0.8;
                     
                     a.x -= sepX;
                     a.y -= sepY;
@@ -392,18 +475,25 @@ const SpherePhysics = {
     
     animate(time) {
         if (!this.lastTime) this.lastTime = time;
-        const dt = Math.min((time - this.lastTime) / 1000, 0.1);
+        // Clamp delta time for stability, but use more precise timing
+        const dt = Math.min((time - this.lastTime) / 1000, 0.016); // Cap at ~60fps
         this.lastTime = time;
         
+        // Batch DOM updates for better performance
         this.spheres.forEach(s => this.update(s, dt, time));
         this.checkCollisions();
         
+        // Use requestAnimationFrame with high priority
         this.animationId = requestAnimationFrame(t => this.animate(t));
     },
     
     start() {
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.lastTime = 0;
+        // Add animating class for mobile optimization
+        if (this.container) {
+            this.container.classList.add('animating');
+        }
         this.animationId = requestAnimationFrame(t => this.animate(t));
     },
     
@@ -411,6 +501,10 @@ const SpherePhysics = {
         if (this.animationId) {
             cancelAnimationFrame(this.animationId);
             this.animationId = null;
+        }
+        // Remove animating class when stopped
+        if (this.container) {
+            this.container.classList.remove('animating');
         }
     },
     
